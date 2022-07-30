@@ -10,11 +10,7 @@ import { productInputs, userInputs } from "./formSource";
 import "./style/dark.scss";
 import { useContext } from "react";
 import { DarkModeContext } from "./context/darkModeContext";
-import CreateIncident from "./components/incident/CreateIncident";
-import Allincident from "./components/incident/AllIncident";
-import EditIncident from "./components/incident/EditIncident";
-import CreateZone from "./components/zone/CreateZone";
-import AllZones from "./components/zone/AllZones";
+import Homepage from "./components/homepage/Homepage"
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
