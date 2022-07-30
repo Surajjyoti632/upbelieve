@@ -1,32 +1,67 @@
 import React from 'react'
+import axios from "axios"
 import {Link,useNavigate } from 'react-router-dom'
 import {useState,useContext} from 'react'
+import {GlobalState} from "../../GlobalState"
 import "./auth.scss"
 
-const Login = () => {
+const Register = () => {
 
-    const [username,setUsername]= useState("");
-    const [password, setPassword] = useState("");
+    const state = useContext(GlobalState);
 
-    const onChangeUserName = (e) => {
-        setUsername(e.target.value)
+    const [data, setData] = useState({
+        email: "",
+        password: ""
+    })
+    
+
+    const onChangeEmail = (e) => {
+        setData({
+            ...data,
+            email: e.target.value
+        })
     }
     const onChangePwd = (e) => {
-        setPassword(e.target.value)
+        setData({
+            ...data,
+            password: e.target.value
+        })
+    }
+
+    const onSubmit = async (e) => {
+        e.preventDefault();
+
+        let {email, password} = data;
+
+        try {
+      let dta = await  axios.post("http://localhost:5000/user/register", 
+       {
+        email,
+        password
+       }
+       
+      )
+
+      console.log(dta);
+      
+      //window.location.href = "/login";
+            
+        } catch (err) {
+           console.log(err);
+            alert(err.response);
+        }
     }
    
-    console.log({
-        username, password
-    })
+    console.log(data)
     
    return (
         <form >
             <div  className="login-box">
                 <h1>Register</h1>
-                <input type="text" placeholder="username" onChange={onChangeUserName} />
+                <input type="text" placeholder="Email" onChange={onChangeEmail} />
                 <input type="password" placeholder="Password" onChange={onChangePwd}/>
                 <div>
-                    <button type="submit" className="login-button">Register</button>
+                    <button type="submit" className="login-button" onClick={onSubmit}>Register</button>
                 
                 </div>
                 <span>Already have an account? <Link style={{color:"#1A94F1"}} to="/login">Login</Link></span>
@@ -37,4 +72,4 @@ const Login = () => {
     )
 }
 
-export default Login
+export default Register

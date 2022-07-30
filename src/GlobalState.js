@@ -3,10 +3,13 @@ import React, { createContext, useState, useEffect } from "react";
 
 import axios from "axios";
 
-export const Global = createContext();
+export const GlobalState = createContext();
 
 export const DataProvider = ({ children }) => {
   const [token, setToken] = useState("");
+  const [isLoggedIn, setLoggedIn] = useState(false);
+  const [role, setRole] = useState("");
+  const [userId, setUserId] = useState("");
 
   useEffect(() => {
     const firstLogin = localStorage.getItem("firstLogin");
@@ -22,8 +25,10 @@ export const DataProvider = ({ children }) => {
 
   const state = {
     token: [token, setToken],
-   
+    isLoggedIn: [isLoggedIn, setLoggedIn],
+    role: [role, setRole],
+    userId: [userId, setUserId],
   };
 
-  return <Global.Provider value={state}>{children}</Global.Provider>;
+  return <GlobalState.Provider value={state}>{children}</GlobalState.Provider>;
 };
