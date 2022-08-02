@@ -2,6 +2,7 @@ import "./createzone.scss";
 import Sidebar from "../sidebar/Sidebar";
 import Navbar from "../navbar/Navbar";
 import { useState } from "react";
+import Button from '@mui/material/Button';
 import axios from "axios";
 
 const CreateZone = () => {
@@ -57,9 +58,17 @@ const CreateZone = () => {
       const {
         location, pinCode, fullAddress, phNo, email
       } = zoneData;
-
+     if(
+      location===""||
+      pinCode ===""|| 
+      fullAddress ===""||
+      phNo ===""||
+      email === ""){
+        alert("Please fill all the fields")
+        return;
+      }
       const token = localStorage.getItem("token")
-      let res = await axios.post("http://localhost:5000/zone/create-zone", {
+      let res = await axios.post("http://localhost:5001/zone/create-zone", {
         location, pinCode, fullAddress, phNo, email
     },
     {
@@ -69,24 +78,26 @@ const CreateZone = () => {
         },
       },
       )
-
       console.log(res.data);
+      window.location.href = "/all-zone"
     } catch (err) {
+      alert("Zone already created or problem at server side")
       console.log(err);
     }
   } 
   return (
+    <>
     <div className="new">
-      <Sidebar />
+      
       <div className="newContainer">
-        <Navbar />
+        
         <div className="top">
-          <h1>Create an Incident</h1>
+          <h1 style={{color: "black"}}>Create a Zone</h1>
         </div>
         <div className="bottom">
           <div className="right">
             <form>
-              <div className="formInput">
+             
               <div className="formInput">
                 <label>Email</label>
                 <input type="text" placeholder="" onChange={onChangeEmail} />
@@ -95,6 +106,7 @@ const CreateZone = () => {
                 <label>Ph No</label>
                 <input type="text" placeholder="" onChange={onChangePhNo} />
               </div>
+              <div className="formInput">
                 <label>Full Address</label>
                 <input
                   type="text"
@@ -121,11 +133,18 @@ const CreateZone = () => {
                 />
               </div>
             </form>
-            <button onClick={onSubmit}>Create</button>
           </div>
         </div>
       </div>
     </div>
+    <div className="new">
+      <div className="newContainer">
+        <div className="top">
+          <Button variant="contained" onClick={onSubmit} style={{marginLeft : "auto", marginRight : "auto"}}>Create Zone</Button>
+        </div>
+      </div>
+    </div>
+    </>
   );
 };
 

@@ -9,25 +9,39 @@ import { useState, useEffect } from "react";
 
 const AllZones = () => {
 const [data, setData] = useState();
+const [greenZone, setGreenZone] = useState([])
+const [orangeZone, setOrangeZone] = useState([])
+const [redZone, setRedZone] = useState([])
 const [loading, setLoading] = useState(true);
 
-  const handleDelete = (id) => {
-    setData(data.filter((item) => item.id !== id));
-  };
-
   useEffect(()=> {
-    setLoading(true);
     const token = localStorage.getItem("token");
-    axios.get("http://localhost:5000/zone/all-zones", {
+    axios.get("http://localhost:5001/zone/all-zones", {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
         },
     }).then((res)=> {
       let dta = res.data;
-      
+      let green = [];
+      let red = [];
+      let orange = [];
+
       dta.forEach((ele, index ) => {
-          ele.id = index
+        ele.id = index
+        if(ele.currZoneStatus === "green"){
+          green.push(ele)
+        }
+        else if(ele.currZoneStatus === "red"){
+          red.push(ele)
+        }
+        else if(ele.currZoneStatus === "orange"){
+          orange.push(ele)
+        } 
+
+        setGreenZone(green);
+        setOrangeZone(orange);
+        setRedZone(red);
       }) 
       
       setData(dta);
@@ -91,25 +105,63 @@ const [loading, setLoading] = useState(true);
       {
         loading ? <p>Loading... | Please Wait</p>: (
           <>
-            <div className="datatableTitle">
-                All Incident
-                <Link to="/create-incident" className="link">
-                  Add New
-                </Link>
+              <div className="datatableTitle">
+                Green Zones
               </div>
-              <DataGrid
+              {
+                greenZone.length === 0 ? <></> : (
+                  <DataGrid
                 className="datagrid"
-                rows={data}
+                rows={greenZone}
                 columns={columns}
                 pageSize={9}
                 rowsPerPageOptions={[9]}
                 checkboxSelection
               />
+                )
+              }
+
+           
+              {
+                orangeZone.length === 0 ? <></> : (
+                  <>
+                   <div className="datatableTitle">
+                Orange Zones
+              </div>
+                  <DataGrid
+                className="datagrid"
+                rows={orangeZone}
+                columns={columns}
+                pageSize={9}
+                rowsPerPageOptions={[9]}
+                checkboxSelection
+              />
+              </>
+                )
+              }
+
+            
+              {
+                redZone.length === 0 ? <></> : (
+                  <>
+                  <div className="datatableTitle">
+                Red Zones
+              </div>
+                  <DataGrid
+                className="datagrid"
+                rows={redZone}
+                columns={columns}
+                pageSize={9}
+                rowsPerPageOptions={[9]}
+                checkboxSelection
+              />
+              </>
+                )
+              }
+              
           </>
         )
       }
-      <p>Working</p>
-      
     </div>
   );
 };

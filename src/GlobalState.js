@@ -12,12 +12,14 @@ export const DataProvider = ({ children }) => {
   const [userId, setUserId] = useState("");
 
   useEffect(() => {
-    const firstLogin = localStorage.getItem("firstLogin");
+    const loginStatus = localStorage.getItem("loginStatus");
 
-    if (firstLogin) {
+    if (loginStatus) {
       const settingToken = () => {
-        const getToken = localStorage.getItem("jwtToken");
+        const getToken = localStorage.getItem("token");
         setToken(getToken);
+        setLoggedIn(true);
+        setRole(localStorage.getItem("role"));
       };
       settingToken();
     }

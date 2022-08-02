@@ -35,7 +35,7 @@ const Login = () => {
 
         try {
             
-            let res = await  axios.post("http://localhost:5000/user/login", {
+            let res = await  axios.post("http://localhost:5001/user/login", {
                 email,
                 password
             })
@@ -45,10 +45,18 @@ const Login = () => {
             localStorage.setItem("role", res.data.role);
             localStorage.setItem("userId", res.data.id);
             localStorage.setItem("token", res.data.refreshtoken);
-            //window.location.href = "/dashboard";         
+
+            if( res.data.role === "admin"){
+                window.location.href = "/dashboard";
+            }
+
+            if( res.data.role === "user"){
+                window.location.href = "/my-incident";
+            }
+                     
         } catch (err) {
             console.log(err);
-            //alert(err.response);
+            alert("Problem in authentication");
         }
     }
    
@@ -63,8 +71,6 @@ const Login = () => {
                 
                 </div>
                 <span>New to Upbelieve? <Link style={{color:"#1A94F1"}} to="/register">Register</Link></span>
-              
-                
         </div>
         </form>
     )

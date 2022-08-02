@@ -1,22 +1,29 @@
 import "./createincident.scss";
-import Sidebar from "../sidebar/Sidebar";
-import Navbar from "../navbar/Navbar";
 import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
+import { GlobalState } from "../../GlobalState";
+import Button from '@mui/material/Button';
 import axios from "axios";
 
 const EditIncident = () => {
-  const {id} = useParams();
+  const {id, pinCode} = useParams();
+  const state = useContext(GlobalState);
+  const [role] = state.role;
+  const [isLoggedIn] = state.isLoggedIn;
+
   const [incidentData, setIncidentData] = useState({
-    pinCode: "", 
+    pinCode: pinCode, 
     isResolved: false, 
-    resolveSummary: ""
+    resolveSummary: "",
+    incidentStatus: ""
   });
 
  // pinCode, isResolved, resolveSummary
   
 
-  console.log(incidentData);
+  console.log({
+    id, pinCode
+  });
 
   const onChangeIsResolved = (e) => {
     setIncidentData({
@@ -25,12 +32,6 @@ const EditIncident = () => {
     });
   };
 
-  const onChangePincode = (e) => {
-    setIncidentData({
-      ...incidentData,
-      pinCode: e.target.value,
-    });
-  };
 
   const onChangeResolveSummary = (e) => {
     setIncidentData({
@@ -39,21 +40,31 @@ const EditIncident = () => {
     });
   };
 
-  const onSubmit = async (e) =>{
+  const onChangeIncidentStatus = (e) => {
+    setIncidentData({
+      ...incidentData,
+      incidentStatus: e.target.value,
+    });
+  }
+
+  const onSubmit = (e) =>{
     e.preventDefault();
 
     try {
       const {
         pinCode,
         isResolved,
-        resolveSummary
+        resolveSummary,
+        incidentStatus
       } = incidentData;
 
       const token = localStorage.getItem("token")
-      let res = await axios.post("http://localhost:5000/incident/update-incident/" + id, {
+       axios.post("http://localhost:5001/incident/update-incident/" + id, {
         pinCode,
         isResolved,
-        resolveSummary
+        resolveSummary,
+        incidentData,
+        incidentStatus
     },
     {
         headers: {
@@ -61,18 +72,26 @@ const EditIncident = () => {
           Authorization: token,
         },
       },
-      )
+      ).then((res) => {
+        console.log(res.data);
+        if(role === "admin"){
+          window.location.href = "/all-incident"
+        }
 
-      console.log(res.data);
+        if(role === "user"){
+          window.location.href = "/my-incident"
+        }
+        
+      })
+
     } catch (err) {
       console.log(err);
     }
   } 
   return (
-    <div className="new">
-      <Sidebar />
+    <>
+      <div className="new">
       <div className="newContainer">
-        <Navbar />
         <div className="top">
           <h1>Edit Incident</h1>
         </div>
@@ -91,8 +110,8 @@ const EditIncident = () => {
                 <label>Pincode</label>
                 <input
                   type="text"
+                  value={incidentData.pinCode}
                   placeholder=""
-                  onChange={onChangePincode}
                 />
               </div>
               <div className="formInput">
@@ -103,12 +122,28 @@ const EditIncident = () => {
                   <option value={false}>No</option>
                 </select>
               </div>
+              <div className="formInput">
+                <label>Incident Status</label>
+                <select onChange={onChangeIncidentStatus}>
+                  <option>select </option>
+                  <option value="pending">Pending</option>
+                  <option value="resolved">Resolved</option>
+                </select>
+              </div>
             </form>
-            <button onClick={onSubmit}>Create</button>
           </div>
         </div>
       </div>
     </div>
+    <div className="new">
+      <div className="newContainer">
+        <div className="top">
+          <Button variant="contained" onClick={onSubmit} style={{marginLeft : "auto", marginRight : "auto"}}>Update</Button>
+        </div>
+      </div>
+    </div>
+    </>
+    
   );
 };
 

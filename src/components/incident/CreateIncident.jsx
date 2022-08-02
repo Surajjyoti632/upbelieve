@@ -1,10 +1,40 @@
 import "./createincident.scss";
-import Sidebar from "../sidebar/Sidebar";
-import Navbar from "../navbar/Navbar";
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
+import Button from '@mui/material/Button';
+import MenuItem from '@mui/material/MenuItem';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import {GlobalState} from "../../GlobalState"
 
-const CreateIncident = ({ inputs, title }) => {
+
+const CreateIncident = () => {
+
+  const state = useContext(GlobalState);
+  const [role] = state.role;
+  const [isLoggedIn] = state.isLoggedIn;
+  
+
+  const [loading, setLoading] = useState(true);
+  const [zones, setZones] = useState([]);
+
+
+   useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios.get("http://localhost:5001/zone/all-zones", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+    }).then((res)=> {
+      setZones(res.data);
+      setLoading(false);
+      }) .catch((err)=> {
+        console.log("Can not fetch zone details")
+      })
+    
+  }, [])
+
+  console.log(zones);
   const [incidentData, setIncidentData] = useState({
     incidentName: "",
     description: "",
@@ -17,19 +47,6 @@ const CreateIncident = ({ inputs, title }) => {
     pointOfOccurance: "",
   });
 
-  // incidentName: String,/
-  // description: String,/
-  // location: String,/
-  // pinCode: String,/
-  // customerName: String,/
-  // hasComplaint: {/
-  //   type: Boolean,
-  //   defualt: false,
-  // },
-  // item: String,/
-  // price: String,/
-  // pointOfOccurance: String,/
-  
 
   console.log(incidentData);
 
@@ -48,10 +65,14 @@ const CreateIncident = ({ inputs, title }) => {
   };
 
   const onChangePincode = (e) => {
-    setIncidentData({
-      ...incidentData,
-      pinCode: e.target.value,
-    });
+
+   
+      setIncidentData({
+        ...incidentData,
+        pinCode: e.target.value,
+      });
+    
+    
   };
 
   const onChangeCustomerName = (e) => {
@@ -114,8 +135,26 @@ const CreateIncident = ({ inputs, title }) => {
         pointOfOccurance
       } = incidentData;
 
+      if(incidentName === "" ||
+        description === "" ||
+        pinCode === ""||
+        location === ""||
+        customerName === ""||
+        item === 0||
+        hasComplaint === ""||
+        price === 0||
+        pointOfOccurance === ""){
+          alert("Please fill all the fields")
+          return;
+        }
+
+        if(pinCode.length !== 6){
+          alert("Please enter a valid Pincode");
+          return;
+        }
+
       const token = localStorage.getItem("token")
-      let res = await axios.post("http://localhost:5000/incident/create-incident", {
+      let res = await axios.post("http://localhost:5001/incident/create-incident", {
         incidentName,
         description,
         pinCode,
@@ -133,19 +172,31 @@ const CreateIncident = ({ inputs, title }) => {
         },
       },
       )
-
+    
       console.log(res.data);
+      if(role === "admin"){
+        window.location.href = "/all-incident"  
+      }
+
+      if(role === "user"){
+        window.location.href = "/my-incident"
+      }
+      
     } catch (err) {
+      alert("Problem in server side")
       console.log(err);
     }
   } 
   return (
-    <div className="new">
-      <Sidebar />
+    <>
+    {loading ? <p>Loading... | Please Wait</p> : (
+      <>
+        <div className="new">
+      
       <div className="newContainer">
-        <Navbar />
+       
         <div className="top">
-          <h1>Create an Incident</h1>
+          <h1 style={{color: "black"}}>Create an Incident</h1>
         </div>
         <div className="bottom">
           <div className="right">
@@ -175,11 +226,23 @@ const CreateIncident = ({ inputs, title }) => {
 
               <div className="formInput">
                 <label>Pincode</label>
-                <input
-                  type="text"
-                  placeholder=""
-                  onChange={onChangePincode}
-                />
+
+                <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={incidentData.pinCode}
+                      label="pincode"
+                      onChange={onChangePincode}
+                    >
+                      <MenuItem default>Select</MenuItem>
+                  {
+                    zones.map((ele, idx)=> {
+                      return (
+                        <MenuItem value={ele.pinCode} id = {idx}>{ele.pinCode}</MenuItem>
+                      )
+                    })
+                  }
+                 </Select>
               </div>
 
               <div className="formInput">
@@ -206,15 +269,19 @@ const CreateIncident = ({ inputs, title }) => {
               </div>
 
               <div className="formInput">
-                <label>Has Complaint</label>
-
-                <select onChange={onChangeComplaint}>
-                  <option>select </option>
-                  <option value={true}>Yes</option>
-                  <option value={false}>No</option>
-                </select>
-              </div>
-
+              <label>Has Complaint</label>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={incidentData.hasComplaint}
+                      label="hasComplaint"
+                      onChange={onChangeComplaint}
+                    >
+                      <MenuItem >Select</MenuItem>
+                      <MenuItem value={true}>Yes</MenuItem>
+                      <MenuItem value={false}>No</MenuItem>
+                    </Select>
+            </div>
               <div className="formInput">
                 <label>Point of Occurance</label>
                 <input
@@ -224,11 +291,24 @@ const CreateIncident = ({ inputs, title }) => {
                 />
               </div>
             </form>
-            <button onClick={onSubmit}>Create</button>
           </div>
         </div>
       </div>
+    
+       
+    
     </div>
+    <div className="new">
+      <div className="newContainer">
+        <div className="top">
+          <Button variant="contained" onClick={onSubmit} style={{marginLeft : "auto", marginRight : "auto"}}>Create</Button>
+        </div>
+      </div>
+    </div>
+      </>
+    )}
+    
+    </>
   );
 };
 

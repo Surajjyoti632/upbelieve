@@ -34,7 +34,7 @@ const Register = () => {
         let {email, password} = data;
 
         try {
-      let dta = await  axios.post("http://localhost:5000/user/register", 
+      let dta = await  axios.post("http://localhost:5001/user/register", 
        {
         email,
         password
@@ -44,7 +44,7 @@ const Register = () => {
 
       console.log(dta);
       
-      //window.location.href = "/login";
+      window.location.href = "/login";
             
         } catch (err) {
            console.log(err);

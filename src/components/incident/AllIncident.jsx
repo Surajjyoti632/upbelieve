@@ -18,7 +18,7 @@ const [loading, setLoading] = useState(true);
   useEffect(()=> {
     setLoading(true);
     const token = localStorage.getItem("token");
-    axios.get("http://localhost:5000/incident/all-incident", {
+    axios.get("http://localhost:5001/incident/all-incident", {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
@@ -81,10 +81,10 @@ const [loading, setLoading] = useState(true);
         return (
           <>
            <div className="cellAction">
-            <Link to={"/view-incident/" + params.row._id} style={{ textDecoration: "none" }}>
+            <Link to={"/view-incident/" + params.row._id } style={{ textDecoration: "none" }}>
               <div className="viewButton">View</div>
             </Link>
-            <Link to={"/edit-incident/" + params.row._id}>
+            <Link to={"/edit-incident/" + params.row._id + "/" + params.row.pinCode}>
               <button className="deleteButton">Edit</button>
             </Link>
           </div>
