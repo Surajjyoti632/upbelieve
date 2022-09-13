@@ -1,7 +1,28 @@
 import React from "react";
 import Webcam from "react-webcam";
+import { useState } from "react";
 import axios from "axios";
 //import { WriteFile } from "./WriteFile";
+
+const getPackage = (height, width) => {
+  const area = width * height;
+
+  let packaging = "";
+
+  if (area <= 100) {
+    packaging = "small";
+  }
+
+  if (area > 100 && area < 500) {
+    packaging = "medium";
+  }
+
+  if (area >= 500) {
+    packaging = "large";
+  }
+
+  return packaging;
+};
 
 export default function ProductClassification() {
   const webcamRef = React.useRef(null);
@@ -11,6 +32,9 @@ export default function ProductClassification() {
     width: 0,
   });
 
+  const [loading, setLoading] = useState(false);
+  const [packageSize, setPackageSize] = useState("");
+
   const capture = React.useCallback(() => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImgSrc(imageSrc);
@@ -18,6 +42,7 @@ export default function ProductClassification() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     let imageData = {
       base64Image: imgSrc,
@@ -28,7 +53,7 @@ export default function ProductClassification() {
 
     try {
       let res = await axios.post(
-        "http://localhost:5001/upload",
+        "http://localhost:5001/upload/get-dimension",
         {
           base64Image,
           fileName,
@@ -43,6 +68,9 @@ export default function ProductClassification() {
         height: res.data.height,
         width: res.data.width,
       });
+      const packaging = getPackage(res.data.height, res.data.width);
+      setPackageSize(packaging);
+      setLoading(false);
       console.log(res.data);
     } catch (err) {
       console.log(err);
@@ -52,16 +80,27 @@ export default function ProductClassification() {
   console.log(imgSrc);
   return (
     <>
-      <div className="productClassification">
+      {loading === false ? (
         <>
-          <Webcam audio={false} ref={webcamRef} screenshotFormat="image/jpeg" />
-          <button onClick={capture}>Capture photo</button>
-          <button onClick={onSubmit}>Send</button>
-          {imgSrc && <img src={imgSrc} />}
+          <div className="productClassification">
+            <>
+              <Webcam
+                audio={false}
+                ref={webcamRef}
+                screenshotFormat="image/jpeg"
+              />
+              <button onClick={capture}>Capture photo</button>
+              <button onClick={onSubmit}>Send</button>
+              {imgSrc && <img src={imgSrc} />}
+            </>
+          </div>
+          <p>Height: {dimension.height}</p>
+          <p>Width: {dimension.width}</p>
+          <p>Packaging: {packageSize}</p>
         </>
-      </div>
-      <p>Height: {dimension.height}</p>
-      <p>Width: {dimension.width}</p>
+      ) : (
+        <p>Loading... | Please wait</p>
+      )}
     </>
   );
 }
