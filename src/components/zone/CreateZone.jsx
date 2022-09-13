@@ -68,7 +68,7 @@ const CreateZone = () => {
         return;
       }
       const token = localStorage.getItem("token")
-      let res = await axios.post("http://localhost:5001/zone/create-zone", {
+      let res = await axios.post("http://43.205.221.186:5001/zone/create-zone", {
         location, pinCode, fullAddress, phNo, email
     },
     {

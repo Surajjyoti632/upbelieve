@@ -20,7 +20,7 @@ const CreateIncident = () => {
 
    useEffect(() => {
     const token = localStorage.getItem("token");
-    axios.get("http://localhost:5001/zone/all-zones", {
+    axios.get("http://43.205.221.186:5001/zone/all-zones", {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
@@ -154,7 +154,7 @@ const CreateIncident = () => {
         }
 
       const token = localStorage.getItem("token")
-      let res = await axios.post("http://localhost:5001/incident/create-incident", {
+      let res = await axios.post("http://43.205.221.186:5001/incident/create-incident", {
         incidentName,
         description,
         pinCode,

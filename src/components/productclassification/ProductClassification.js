@@ -53,7 +53,7 @@ export default function ProductClassification() {
 
     try {
       let res = await axios.post(
-        "http://localhost:5001/upload/get-dimension",
+        "http://43.205.221.186:5001/upload/get-dimension",
         {
           base64Image,
           fileName,

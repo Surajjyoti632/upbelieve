@@ -18,7 +18,7 @@ const [loading, setLoading] = useState(true);
   useEffect(()=> {
     setLoading(true);
     const token = localStorage.getItem("token");
-    axios.get("http://localhost:5001/incident/all-incident", {
+    axios.get("http://43.205.221.186:5001/incident/all-incident", {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,

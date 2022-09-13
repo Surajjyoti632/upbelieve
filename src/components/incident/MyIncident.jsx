@@ -20,7 +20,7 @@ const Datatable = () => {
     setLoading(true);
     const token = localStorage.getItem("token");
     axios
-      .get("http://localhost:5001/incident/my-incident", {
+      .get("http://43.205.221.186:5001/incident/my-incident", {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,

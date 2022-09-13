@@ -34,7 +34,7 @@ const Register = () => {
         let {email, password} = data;
 
         try {
-      let dta = await  axios.post("http://localhost:5001/user/register", 
+      let dta = await  axios.post("http://43.205.221.186:5001/user/register", 
        {
         email,
         password

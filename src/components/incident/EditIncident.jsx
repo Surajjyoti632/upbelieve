@@ -59,7 +59,7 @@ const EditIncident = () => {
       } = incidentData;
 
       const token = localStorage.getItem("token")
-       axios.post("http://localhost:5001/incident/update-incident/" + id, {
+       axios.post("http://43.205.221.186:5001/incident/update-incident/" + id, {
         pinCode,
         isResolved,
         resolveSummary,
